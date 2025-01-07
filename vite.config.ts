@@ -13,5 +13,6 @@ export default defineConfig({
     },
     test: {
         include: ['src/**/*.{test,spec}.{js,ts}']
-    }
+    },
+    base: process.env.NODE_ENV === 'production' ? '/create-real-estate-event/' : '/'
 });
