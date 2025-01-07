@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { NDKEvent } from '@nostr-dev-kit/ndk';
+    import { NDKEvent } from '@nostr-dev-kit/ndk';
     import { ndk } from '$lib/stores/ndk';
-
+    import { toasts } from '$lib/stores/toast';
     export let events: NDKEvent[] = [];
     export let eventRelays: Map<string, Set<string>>;
 
@@ -17,15 +17,15 @@
             await deleteEvent.publish();
             // Remove the event from local state
             events = events.filter(e => e.id !== event.id);
-            alert('Event deleted successfully');
+            toasts.success('Event deleted successfully');
         } catch (error) {
             console.error('Error deleting event:', error);
-            alert('Error deleting event');
+            toasts.error('Error deleting event');
         }
     }
 </script>
 
-<div class="max-w-4xl mx-auto bg-base-100 rounded-lg shadow-xl p-6 mb-6">
+<div class="max-w-6xl mx-auto bg-base-100 rounded-lg shadow-xl p-6 mb-6">
     <h2 class="text-xl font-bold mb-4">Your Listings</h2>
     {#if events.length > 0}
         <div class="overflow-x-auto">

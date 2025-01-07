@@ -10,13 +10,18 @@
     import 'prismjs/themes/prism-tomorrow.css';
     import 'prismjs/components/prism-json';
     import { browser } from '$app/environment';
+    import AddressInput from './form/AddressInput.svelte';
+    import ImageUpload from './form/ImageUpload.svelte';
+    import AmenitiesSection from './form/AmenitiesSection.svelte';
+    import JsonPreview from './form/JsonPreview.svelte';
+    import { toasts } from '$lib/stores/toast';
 
     export let pubkey: string;
 
     let images: File[] = [];
     let imageHashes: string[] = [];
     let isDragging = false;
-    let kind = 30402;
+    let kind = 30403;
     
     let title = '';
     let price = '';
@@ -83,7 +88,7 @@
     
     async function handleSubmit() {
         if (!window.nostr) {
-            alert('Please install a Nostr extension');
+            toasts.error('Please install a Nostr extension');
             return;
         }
         
@@ -120,11 +125,11 @@
             let relays = await ndkEvent.publish();
             console.log(relays);
             
-            alert('Listing published successfully!');
+            toasts.success('Listing published successfully!');
             resetForm();
         } catch (error) {
             console.error('Error publishing event:', error);
-            alert('Error publishing listing');
+            toasts.error('Error publishing listing');
         }
     }
 
@@ -567,53 +572,14 @@
                 />
             </div>
             
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Street Address</span>
-                </label>
-                <div class="flex gap-2">
-                    <input
-                        type="text"
-                        bind:value={address}
-                        class="input input-bordered flex-1"
-                        placeholder="Enter street address"
-                    />
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        on:click={geocodeAddress}
-                        disabled={!address}
-                    >
-                        Geocode
-                    </button>
-                </div>
-                {#if coordinates}
-                    <label class="label">
-                        <span class="label-text-alt">
-                            Lat: {coordinates[0]}, Lon: {coordinates[1]}
-                        </span>
-                    </label>
-                {/if}
-            </div>
-            
-            <div 
-                class="map-container mb-4 rounded-lg overflow-hidden {coordinates ? 'visible' : ''}" 
-                bind:this={mapContainer}
-            >
-            </div>
-
-            {#if coordinates && geohash}
-                <div class="text-sm mb-4 space-y-1">
-                    <div>
-                        <span class="font-semibold">Coordinates:</span> 
-                        {coordinates[0]}, {coordinates[1]}
-                    </div>
-                    <div>
-                        <span class="font-semibold">Geohash:</span> 
-                        {geohash}
-                    </div>
-                </div>
-            {/if}
+            <!-- Address Input and Map -->
+            <AddressInput
+                bind:address
+                bind:coordinates
+                bind:geohash
+                bind:content
+                bind:tags
+            />
             
             <form on:submit|preventDefault={handleSubmit} class="space-y-6">
                 <div class="form-control">
@@ -843,59 +809,14 @@
                 </div>
 
                 <!-- Amenities Section -->
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Amenities</span>
-                    </label>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-base-200 rounded-lg">
-                        {#each Object.entries(amenities) as [key, value]}
-                            <label class="label cursor-pointer justify-start gap-2">
-                                <input
-                                    type="checkbox"
-                                    class="checkbox"
-                                    bind:checked={amenities[key]}
-                                />
-                                <span class="label-text">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                            </label>
-                        {/each}
-                    </div>
-                </div>
+                <AmenitiesSection bind:amenities />
                 
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Description</span>
-                    </label>
-                    <textarea
-                        bind:value={content}
-                        class="textarea textarea-bordered h-24"
-                        required
-                    ></textarea>
-                </div>
-                
-                <div
-                    class="border-2 border-dashed p-8 text-center cursor-pointer"
-                    class:border-primary={isDragging}
-                    on:dragenter|preventDefault={() => isDragging = true}
-                    on:dragleave|preventDefault={() => isDragging = false}
-                    on:dragover|preventDefault
-                    on:drop={handleDrop}
-                >
-                    <p>Drag and drop images here</p>
-                    {#if images.length > 0}
-                        <div class="mt-4 grid grid-cols-3 gap-4">
-                            {#each images as image, i}
-                                <div class="relative">
-                                    <img
-                                        src={URL.createObjectURL(image)}
-                                        alt="Preview"
-                                        class="w-full h-32 object-cover rounded"
-                                    />
-                                    <p class="text-xs mt-1 break-all">SHA256: {imageHashes[i]}</p>
-                                </div>
-                            {/each}
-                        </div>
-                    {/if}
-                </div>
+                <!-- Image Upload -->
+                <ImageUpload
+                    bind:images
+                    bind:imageHashes
+                    bind:isDragging
+                />
                 
                 <button type="submit" class="btn btn-primary w-full">
                     Publish Listing
@@ -904,24 +825,6 @@
         </div>
 
         <!-- Right column: Preview -->
-        <div class="sticky top-6">
-            <div class="bg-base-200 rounded-lg p-4">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold">Event Preview</h2>
-                    <div class="text-sm text-base-content/60">
-                        {previewEvent.tags.length} tags
-                    </div>
-                </div>
-                <div class="preview-container">
-                    <div class="preview-scroll">
-                        {#if browser && isPreviewReady}
-                            <pre><code class="language-json">{@html previewEventFormatted}</code></pre>
-                        {:else}
-                            <pre><code class="language-json">{JSON.stringify(previewEvent, null, 2)}</code></pre>
-                        {/if}
-                    </div>
-                </div>
-            </div>
-        </div>
+        <JsonPreview {previewEvent} />
     </div>
 </div> 
