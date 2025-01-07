@@ -15,6 +15,7 @@
     import AmenitiesSection from './form/AmenitiesSection.svelte';
     import JsonPreview from './form/JsonPreview.svelte';
     import { toasts } from '$lib/stores/toast';
+    import { base } from '$app/paths';
 
     export let pubkey: string;
 
@@ -145,7 +146,7 @@
         // Initialize map but don't show it until we have coordinates
         map = new maplibregl.Map({
             container: mapContainer,
-            style: '/map.json', // Get a free key from maptiler.com
+            style: `${base}/map.json`,
             zoom: 15
         });
         
