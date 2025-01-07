@@ -1,0 +1,14 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import 'maplibre-gl/dist/maplibre-gl.css';
+.map-container {
+    height: 300px;
+    width: 100%;
+    display: none;
+}
+
+.map-container.visible {
+    display: block;
+}

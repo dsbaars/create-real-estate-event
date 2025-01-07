@@ -7,8 +7,7 @@
     import maplibregl from 'maplibre-gl';
     import Geohash from 'latlon-geohash';
     import Prism from 'prismjs';
-    import 'prismjs/themes/prism-tomorrow.css';
-    import 'prismjs/components/prism-json';
+
     import { browser } from '$app/environment';
     import AddressInput from './form/AddressInput.svelte';
     import ImageUpload from './form/ImageUpload.svelte';
@@ -468,9 +467,7 @@
     ) : '';
 </script>
 
-<style>
-    @import 'maplibre-gl/dist/maplibre-gl.css';
-    
+<style>    
     .map-container {
         height: 300px;
         width: 100%;

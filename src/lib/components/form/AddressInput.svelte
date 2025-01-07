@@ -87,20 +87,6 @@
     }
 </script>
 
-<style>
-    @import 'maplibre-gl/dist/maplibre-gl.css';
-    
-    .map-container {
-        height: 300px;
-        width: 100%;
-        display: none;
-    }
-    
-    .map-container.visible {
-        display: block;
-    }
-</style>
-
 <div class="form-control">
     <label class="label">
         <span class="label-text">Street Address</span>
@@ -131,7 +117,7 @@
 </div>
 
 <div 
-    class="map-container mb-4 rounded-lg overflow-hidden {coordinates ? 'visible' : ''}" 
+    class="map-container relative mb-4 rounded-lg overflow-hidden {coordinates ? 'visible' : ''}" 
     bind:this={mapContainer}
 >
 </div>
