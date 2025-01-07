@@ -4,6 +4,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 export default defineConfig({
     plugins: [sveltekit()],
     build: {
+        minify: false,
         // Copy the map style file to the build output
         rollupOptions: {
             input: {
