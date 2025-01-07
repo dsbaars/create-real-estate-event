@@ -146,7 +146,7 @@
         // Initialize map but don't show it until we have coordinates
         map = new maplibregl.Map({
             container: mapContainer,
-            style: `${base}/map.json`,
+            style: `./map.json`,
             zoom: 15
         });
         
